@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>2025 Biotech Salary Explorer</title>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <!--<script src="https://unpkg.com/d3-annotation@2.5.1/d3-annotation.min.js"></script> -->
+  <!--<script src="https://unpkg.com/d3-annotation@2.5.1/dist/d3-annotation.min.js"></script> -->
+  <script src="https://cdn.jsdelivr.net/npm/d3-annotation@2.5.1/dist/d3-annotation.min.js"></script>
+  <script src="https://unpkg.com/topojson-client@3"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      background: #f7f7f7;
+    }
+
+    header {
+      background: #003366;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    main {
+      padding: 2rem;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+    }
+
+    .vis-section {
+      margin-top: 3rem;
+    }
+
+    .nav-buttons button {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>2025 Biotech Industry Explorer</h1>
+    <p>Explore salaries, equity, and industry volatility in biotech</p>
+  </header>
+
+  <main>
+    <div class="nav-buttons">
+      <button id="btn-overview">Overview</button>
+      <button id="btn-role">By Role</button>
+      <button id="btn-company">By Company</button>
+      <button id="btn-equity">Equity & Diversity</button>
+      <button id="btn-education">Education</button>
+    </div>
+
+    <div id="vis-container" class="vis-section">
+      <!-- D3 visualizations will render here -->
+    </div>
+  </main>
+
+  <!-- reference .js file -->
+  <script src="main.js"></script>
+</body>
+</html>
