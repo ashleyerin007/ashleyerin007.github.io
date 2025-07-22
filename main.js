@@ -1,7 +1,7 @@
 // Entry point
 document.addEventListener('DOMContentLoaded', () => {
   setupNavigation();
-  loadOverview();
+  loadUSMap();
 });
 
 // csv values mapped to TopoJSON state keys
@@ -22,10 +22,9 @@ const stateAbbrev = {
 };
 
 function setupNavigation() {
-  document.getElementById('btn-overview').addEventListener('click', loadOverview);
+  document.getElementById('btn-us').addEventListener('click', loadUSMap);
+  document.getElementById('btn-global').addEventListener('click', loadGlobalView);
   document.getElementById('btn-role').addEventListener('click', loadByRole);
-  document.getElementById('btn-company').addEventListener('click', loadByCompany);
-  document.getElementById('btn-equity').addEventListener('click', loadEquity);
   document.getElementById('btn-education').addEventListener('click', loadEducation);
 }
 
@@ -34,7 +33,7 @@ function clearVis() {
 }
 
 // Placeholder views
-function loadOverview() {
+function loadUSMap() {
   clearVis();
   //d3.select('#vis-container').append('p').text('Loading salary overview map...');
   // TODO: render map + summary stats
@@ -118,10 +117,114 @@ function loadOverview() {
       .attr("stroke-linejoin", "round")
       .attr("d", path);
 
+    // Add legend
+    const legendValues = color.range().map(d => {
+      const [min, max] = color.invertExtent(d);
+      return {
+        color: d,
+        range: [Math.round(min), Math.round(max)]
+      };
+    });
+
+    // Position legend
+    const legend = svg.append('g')
+      .attr('transform', `translate(${width - 100}, 30)`);
+
+    legend.selectAll('rect')
+      .data(legendValues)
+      .enter()
+      .append('rect')
+      .attr('x', 0)
+      .attr('y', (d, i) => i * 25)
+      .attr('width', 20)
+      .attr('height', 20)
+      .attr('fill', d => d.color)
+      .attr('stroke', '#333');
+
+    legend.selectAll('text')
+      .data(legendValues)
+      .enter()
+      .append('text')
+      .attr('x', 30)
+      .attr('y', (d, i) => i * 25 + 15)
+      .text( d => `$${d.range[0].toLocaleString()} - $${d.range[1].toLocaleString()}`)
+      .attr('font-size', '12px');
+
     });
 
   });
 
+}
+
+function loadGlobalView() {
+  clearVis();
+
+  const svg = d3.select('#vis-container')
+    .append('svg')
+    .attr('width', 960)
+    .attr('height', 600);
+
+  d3.csv("2025 Biotech Salary.csv").then(data => { 
+    //const globalData = data.filter(d => !d["US State"] && d["Country"] && d["Annual Base Salary"]);
+    const globalData = data.filter(d => d["Country"] && d["Annual Base Salary"]);
+
+  globalData.forEach(d => {
+    d.Salary = +d["Annual Base Salary"].replace(/[^0-9.]/g, '');
+  });
+
+  const avgSalaryByCountry = d3.rollup(
+    globalData,
+    v => d3.mean(v, d => d.Salary),
+    d => d["Country"]
+  );
+
+  const salaryArray = Array.from(avgSalaryByCountry, ([country, avgSalary]) => ({ country, avgSalary }));
+  salaryArray.sort((a, b) => d3.descending(a.avgSalary, b.avgSalary));
+
+  const margin = { top: 40, right: 20, bottom: 120, left: 80 };
+  const width = 960 - margin.left - margin.right;
+  const height = 600 - margin.top - margin.bottom;
+
+  const chart = svg.append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+  const x = d3.scaleBand()
+    .domain(salaryArray.map(d => d.country))
+    .range([0, width])
+    .padding(0.2);
+
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(salaryArray, d => d.avgSalary)])
+    .range([height, 0]);
+
+  chart.append("g")
+    .attr("transform", `translate(0, ${height})`)
+    .call(d3.axisBottom(x))
+    .selectAll("text")
+    .attr("transform", "rotate(-45)")
+    .style("text-anchor", "end");
+
+  chart.append("g")
+    .call(d3.axisLeft(y));
+
+  chart.selectAll("rect")
+    .data(salaryArray)
+    .enter()
+    .append("rect")
+    .attr("x", d => x(d.country))
+    .attr("y", d => y(d.avgSalary))
+    .attr("width", x.bandwidth())
+    .attr("height", d => height - y(d.avgSalary))
+    .attr("fill", "#4682b4");
+
+  svg.append("text")
+    .attr("x", margin.left)
+    .attr("y", 20)
+    .text("Average Annual Salary by Country")
+    .style("font-size", "16px")
+    .style("font-weight", "bold");
+
+  })
 }
 
 function loadByRole() {
