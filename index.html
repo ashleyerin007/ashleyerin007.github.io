@@ -1,65 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>2025 Biotech Salary Explorer</title>
+  <meta charset="UTF-8" />
+  <title>Biotech Salaries Map</title>
   <script src="https://d3js.org/d3.v7.min.js"></script>
-  <!--<script src="https://unpkg.com/d3-annotation@2.5.1/d3-annotation.min.js"></script> -->
-  <!--<script src="https://unpkg.com/d3-annotation@2.5.1/dist/d3-annotation.min.js"></script> -->
-  <script src="https://cdn.jsdelivr.net/npm/d3-annotation@2.5.1/dist/d3-annotation.min.js"></script>
-  <script src="https://unpkg.com/topojson-client@3"></script>
+  <script src="https://unpkg.com/topojson@3"></script>
   <style>
-    body {
-      font-family: sans-serif;
+    html, body {
       margin: 0;
-      background: #f7f7f7;
+      padding: 0;
+      height: 100%;
     }
 
-    header {
-      background: #003366;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-
-    main {
-      padding: 2rem;
+    #map {
+      width: 100%;
+      height: 100%;
     }
 
     svg {
+      display: block;
       width: 100%;
       height: auto;
     }
 
-    .vis-section {
-      margin-top: 3rem;
+    .tooltip {
+      position: absolute;
+      text-align: center;
+      background: white;
+      border: 1px solid #999;
+      padding: 6px;
+      font-size: 12px;
+      pointer-events: none;
     }
 
-    .nav-buttons button {
-      margin-right: 10px;
+    .chart-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
     }
+
+    .chart-container {
+      flex: 1 1 auto;
+      width: 360px; /* Fixed width to ensure consistent chart size */
+      min-width: 300px;
+      margin: 0 auto;
+    }
+
+    .chart-container svg {
+      width: 100% !important;
+      height: auto !important;
+      display: block;
+    }
+  
+    .small-chart {
+      flex: 1 1 25%;
+      max-width: 25%;
+    }
+
+    .medium-chart {
+      flex: 1 1 30%;
+      max-width: 30%;
+    }
+
+    .large-chart {
+      flex: 1 1 40%;
+      max-width: 40%;
+    }
+
+
   </style>
 </head>
 <body>
-  <header>
-    <h1>2025 Biotech Industry Explorer</h1>
-    <p>Explore salaries, equity, and industry volatility in biotech</p>
-  </header>
 
-  <main>
-    <div class="nav-buttons">
-      <button id="btn-us">U.S.</button>
-      <button id="btn-global">Global</button>
-      <button id="btn-role">By Role</button>
-      <button id="btn-education">Education</button>
+  <section id="salary-trends">
+    
+    <h2>Part 1: Salary Trends Over Time</h2>
+
+    <div class="chart-row">
+
+    <!-- Chart 1: National Average (smallest) -->
+    <div class="chart-container small-chart">
+      <h3>National Average</h3>
+      <div id="salary-chart"></div>
+      <script type="module" src="./salaryTrendsChart.js"></script>
     </div>
 
-    <div id="vis-container" class="vis-section">
-      <!-- D3 visualizations will render here -->
+    <!-- Chart 2: Grouped Bar by Role (largest) -->
+    <div class="chart-container large-chart">
+      <h3>Grouped Bar Chart (Top Roles by Year)</h3>
+      <div id="salary-role-bar"></div>
+      <script type="module" src="./salaryRoleGroupedBar.js"></script>
     </div>
-  </main>
 
-  <!-- reference .js file -->
-  <script src="main.js"></script>
+    <!-- Chart 3: Salary by State (medium) -->
+    <div class="chart-container medium-chart">
+      <h3>By State</h3>
+      <label for="state-select">Choose a state:</label>
+      <select id="state-select"></select>
+      <div id="salary-by-state"></div>
+      <script type="module" src="./salaryByStateChart.js"></script>
+    </div>
+
+  </div>
+
+  </section>
+
+  <div id="map"></div>
+  <script type="module" src="./usSalaryMap_final.js"></script>
+
 </body>
 </html>
