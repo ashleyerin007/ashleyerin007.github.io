@@ -1,3 +1,5 @@
+//OLD - not in use
+
 // Entry point
 document.addEventListener('DOMContentLoaded', () => {
   setupNavigation();
