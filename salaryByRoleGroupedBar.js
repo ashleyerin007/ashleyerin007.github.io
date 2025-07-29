@@ -27,8 +27,6 @@ d3.csv("Sal.csv", d3.autoType).then(data => {
     .slice(0, 10)
     .map(d => d[0]);
 
-  console.log("📊 Top roles after merge:", topRoles);
-
   // Filter data
   const filtered = data.filter(d => topRoles.includes(d["Job Title"]));
 
