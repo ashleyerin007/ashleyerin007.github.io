@@ -1,97 +1,97 @@
-export async function getAverageSalariesByState(csvPath) {
-  const data = await d3.csv(csvPath, d3.autoType);
 
-  const salaryByState = {};
+import { getAverageSalariesByState, cleanLayoffData, getLayoffCountsByStateYear } from './utils.js';
 
-  data.forEach(row => {
-    const salary = row["Annual Base Salary"];
-    const state = row["US State"]?.trim() || row["State_inferred"]?.trim();
+const width = 960;
+const height = 600;
 
-    if (state && salary && !isNaN(salary)) {
-      if (!salaryByState[state]) {
-        salaryByState[state] = [];
-      }
-      salaryByState[state].push(salary);
-    }
+const svg = d3.select("#map")
+  .append("svg")
+  .attr("width", width)
+  .attr("height", height);
+
+const projection = d3.geoAlbersUsa().translate([width / 2, height / 2]).scale(1000);
+const path = d3.geoPath().projection(projection);
+
+const tooltip = d3.select("body").append("div").attr("class", "tooltip").style("opacity", 0);
+
+
+getAverageSalariesByState("Sal.csv").then(averageSalaries => {
+  const colorScale = d3.scaleSequential()
+    .domain(d3.extent(Object.values(averageSalaries)))
+    .interpolator(d3.interpolateBlues);
+
+  d3.csv("fierce_layoffs.csv").then(rawLayoffData => {
+    const cleanedLayoffs = cleanLayoffData(rawLayoffData);
+    const layoffSummary = getLayoffCountsByStateYear(cleanedLayoffs);
+
+    d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json").then(us => {
+      const states = topojson.feature(us, us.objects.states).features;
+
+      svg.selectAll("path")
+        .data(states)
+        .join("path")
+        .attr("d", path)
+        .attr("fill", d => {
+          const name = d.properties.name;
+          const salary = averageSalaries[name];
+          return salary ? colorScale(salary) : "#ccc";
+        })
+        .attr("stroke", "#fff")
+        .on("mouseover", (event, d) => {
+          const name = d.properties.name;
+          const salary = averageSalaries[name];
+          const layoffs = layoffSummary[name];
+
+          let layoffInfo = "Layoffs: No data";
+          if (layoffs) {
+            const yearSummaries = Object.entries(layoffs)
+              .sort(([a], [b]) => a - b)
+              .map(([year, count]) => `${year} (${count})`)
+              .join(", ");
+            layoffInfo = `Layoffs: ${yearSummaries}`;
+          }
+
+          tooltip.transition().duration(200).style("opacity", 0.9);
+          tooltip.html(`${name}<br>Avg Salary: $${salary ? salary.toLocaleString() : "No data"}<br>${layoffInfo}`)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", () => tooltip.transition().duration(300).style("opacity", 0));
+
+      // Legend
+
+      const legendWidth = 200;
+      const legendHeight = 10;
+
+      const legendSvg = svg.append("g")
+        .attr("transform", `translate(${width - legendWidth - 40}, ${height - 40})`);
+
+      const defs = svg.append("defs");
+      const linearGradient = defs.append("linearGradient")
+        .attr("id", "legend-gradient");
+
+      linearGradient.selectAll("stop")
+        .data(d3.ticks(0, 1, 10))
+        .join("stop")
+        .attr("offset", d => `${d * 100}%`)
+        .attr("stop-color", d => colorScale(d * (colorScale.domain()[1] - colorScale.domain()[0]) + colorScale.domain()[0]));
+
+      legendSvg.append("rect")
+        .attr("width", legendWidth)
+        .attr("height", legendHeight)
+        .style("fill", "url(#legend-gradient)");
+
+      const legendScale = d3.scaleLinear()
+        .domain(colorScale.domain())
+        .range([0, legendWidth]);
+
+      const legendAxis = d3.axisBottom(legendScale)
+        .ticks(5)
+        .tickFormat(d => `$${Math.round(d / 1000)}k`);
+
+      legendSvg.append("g")
+        .attr("transform", `translate(0, ${legendHeight})`)
+        .call(legendAxis);
+      });
   });
-
-  // Compute the average salary for each state
-  const averageSalaries = {};
-  for (const [state, salaries] of Object.entries(salaryByState)) {
-    const avg = d3.mean(salaries);
-    averageSalaries[state] = Math.round(avg);
-  }
-
-  return averageSalaries;
-}
-
-export function cleanLayoffData(rawData) {
-  const parseDate = (dateStr, yearStr) => {
-    if (!dateStr) return "";
-
-    // Example formats: "11-Dec-24", "28-Jan", "March 3"
-    let dateObj;
-
-    // Try known formats
-    const knownFormats = [
-      d3.timeParse("%d-%b-%y"),  // 11-Dec-24
-      d3.timeParse("%d-%b"),     // 28-Jan
-      d3.timeParse("%b %d"),     // Jan 28
-      d3.timeParse("%B %d"),     // January 28
-    ];
-
-    for (const parse of knownFormats) {
-      const temp = parse(dateStr);
-      if (temp) {
-        // If year is missing, insert it from Year column
-        const year = +yearStr;
-        if (isNaN(temp.getFullYear()) || temp.getFullYear() < 100) {
-          temp.setFullYear(year);
-        }
-        return d3.timeFormat("%Y-%m-%d")(temp);
-      }
-    }
-
-    // If nothing worked, return original
-    return "";
-  };
-
-  return rawData
-    .filter(d => d["Location (US)"] && d["Location (US)"].trim() !== "")
-    .map(d => {
-      const cleanedDate = parseDate(d["Date"], d["Year"]);
-
-      return {
-        ...d,
-        "Date": cleanedDate || d["Date"], // fallback to original if unparseable
-      };
-    });
-}
-
-export function getLayoffCountsByStateYear(cleanedLayoffs) {
-  const layoffCounts = {};
-
-  cleanedLayoffs.forEach(row => {
-    const state = row["Location (US)"]?.trim();
-    //const year = +row["Year"];
-
-    //if (!state || isNaN(year)) return;
-
-    const yearRaw = row["Year"];
-    const year = /^\d{4}$/.test(yearRaw) ? yearRaw : "Unknown";
-
-    if (!state) return;
-
-    if (!layoffCounts[state]) {
-      layoffCounts[state] = {};
-    }
-
-    if (!layoffCounts[state][year]) {
-      layoffCounts[state][year] = 0;
-    }
-
-    layoffCounts[state][year] += 1;
-  });
-
-  return layoffCounts;
-}
+});
