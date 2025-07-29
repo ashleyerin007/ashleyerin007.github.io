@@ -8,19 +8,42 @@
   <style>
     html, body {
       margin: 0;
-      padding: 0;
+      padding: 0 0 0 40px; /* add left-side padding */
       height: 100%;
     }
 
-    #map {
+    #vis-container {
+      margin: 0;
+      padding: 0;
+      line-height: 0;
+    }
+
+    #vis-container svg {
+      max-width: 800px;
       width: 100%;
-      height: 100%;
+      height: auto;
+      margin: 0 auto;
+      display: block;
+    }
+
+    #map {
+      margin-top: 0;
+      padding-top: 0;
+      height: auto;  /* Let it fit its content naturally */
     }
 
     svg {
       display: block;
       width: 100%;
       height: auto;
+    }
+
+    #map svg {
+      max-width: 1000px;
+      width: 100%;
+      height: auto;
+      margin: 0 auto;
+      display: block;
     }
 
     .tooltip {
@@ -37,14 +60,12 @@
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 20px;
       margin-bottom: 20px;
     }
 
     .chart-container {
       flex: 1 1 auto;
-      width: 360px; /* Fixed width to ensure consistent chart size */
-      min-width: 300px;
       margin: 0 auto;
     }
 
@@ -53,20 +74,52 @@
       height: auto !important;
       display: block;
     }
-  
-    .small-chart {
-      flex: 1 1 25%;
-      max-width: 25%;
+
+    .wide-chart {
+      flex: 1 1 55%;
+      max-width: 55%;
     }
 
-    .medium-chart {
-      flex: 1 1 30%;
-      max-width: 30%;
+    .narrow-chart {
+      flex: 1 1 42%;
+      max-width: 42%;
     }
 
-    .large-chart {
-      flex: 1 1 40%;
-      max-width: 40%;
+    /* Add vertical spacing between Part I and Part II */
+    #salary-trends {
+      margin-bottom: 30px;
+    }
+
+    #layoffs-section {
+      margin-top: 40px;        /* increases space above (from Part I) */
+      margin-bottom: 10px;     /* decreases space below (before Map) */
+    }
+
+    #map-section {
+      margin-top: 0px;         /* ensures no extra gap above the map */
+    }
+
+    .section-label {
+      font-weight: bold;
+      color: #2c7fb8;
+      margin-right: 8px;
+    }
+
+    .section-intro {
+      max-width: 800px;
+      font-size: 16px;
+      line-height: 1.5;
+      color: #444;
+      margin-bottom: 20px;
+    }
+
+    .section-divider {
+      border: none;
+      height: 1px;
+      background-color: #ccc;
+      margin: 60px auto;
+      width: 80%;
+      opacity: 0.5;
     }
 
 
@@ -74,41 +127,47 @@
 </head>
 <body>
 
+  <!-- Part I: Salary Trends -->
   <section id="salary-trends">
-    
-    <h2>Part 1: Salary Trends Over Time</h2>
+    <h2><span class="section-label">1.</span> Salary Trends Over Time</h2>
+    <p class="section-intro">Biotech salaries have shown dramatic shifts in recent years. The charts below highlight roles and geographic changes over time.</p>
 
     <div class="chart-row">
+      <!-- Chart 1: Grouped Bar by Role -->
+      <div class="chart-container wide-chart">
+        <h3>Grouped Bar Chart (Top Roles by Year)</h3>
+        <div id="salary-role-bar"></div>
+        <script type="module" src="./salaryRoleGroupedBar.js"></script>
+      </div>
 
-    <!-- Chart 1: National Average (smallest) -->
-    <div class="chart-container small-chart">
-      <h3>National Average</h3>
-      <div id="salary-chart"></div>
-      <script type="module" src="./salaryTrendsChart.js"></script>
+      <!-- Chart 2: Salary by State -->
+      <div class="chart-container narrow-chart">
+        <h3>By State</h3>
+        <div id="salary-by-state"></div>
+        <script type="module" src="./salaryByStateChart.js"></script>
+      </div>
     </div>
-
-    <!-- Chart 2: Grouped Bar by Role (largest) -->
-    <div class="chart-container large-chart">
-      <h3>Grouped Bar Chart (Top Roles by Year)</h3>
-      <div id="salary-role-bar"></div>
-      <script type="module" src="./salaryRoleGroupedBar.js"></script>
-    </div>
-
-    <!-- Chart 3: Salary by State (medium) -->
-    <div class="chart-container medium-chart">
-      <h3>By State</h3>
-      <label for="state-select">Choose a state:</label>
-      <select id="state-select"></select>
-      <div id="salary-by-state"></div>
-      <script type="module" src="./salaryByStateChart.js"></script>
-    </div>
-
-  </div>
-
   </section>
 
-  <div id="map"></div>
+  <hr class="section-divider" />
+
+  <!-- Part II: Layoffs Chart -->
+  <section id="layoffs-section">
+    <h2>Part II: Layoffs Over Time</h2>
+    <div id="vis-container"></div>
+  </section>
+
+  <!-- Part III: U.S. Map -->
+  <section id="map-section">
+    <h2>Part III: U.S. Salary Map</h2>
+    <div id="map"></div>
+  </section>
+
+  <!-- Scripts -->
   <script type="module" src="./usSalaryMap_final.js"></script>
+  <script type="module" src="./layoffsData.js"></script>
+  <script type="module" src="./layoffsMonthlyChart.js"></script>
 
 </body>
+
 </html>
