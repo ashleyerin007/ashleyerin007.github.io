@@ -12,15 +12,13 @@ const svg = d3.select("#salary-role-bar")
   .attr("transform", `translate(${margin.left},${margin.top})`);
 
 d3.csv("Sal.csv", d3.autoType).then(data => {
-  // Count job titles
-  //Normalize similar roles
+
   data.forEach(d => {
     if (d["Job Title"] === "Scientist I") {
       d["Job Title"] = "Scientist";
     }
   });
 
-  //Count most common roles AFTER normalization
   const roleCounts = d3.rollup(data, v => v.length, d => d["Job Title"]);
   const topRoles = Array.from(roleCounts.entries())
     .sort((a, b) => b[1] - a[1])
@@ -40,7 +38,6 @@ d3.csv("Sal.csv", d3.autoType).then(data => {
 
   const years = Array.from(grouped.keys()).sort((a, b) => a - b);
 
-  // Convert to flat array for easy binding
   const flatData = [];
   years.forEach(year => {
     const roles = grouped.get(year);
@@ -93,7 +90,7 @@ d3.csv("Sal.csv", d3.autoType).then(data => {
     .attr("height", d => height - y(d.average))
     .attr("fill", d => color(d.role));
 
-  // Legend (horizontal, smaller, bold)
+  // Legend
   const legend = svg.append("g")
     .attr("transform", `translate(40,${-margin.top / 2})`);
 
