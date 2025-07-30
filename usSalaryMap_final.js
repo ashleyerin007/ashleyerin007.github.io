@@ -74,8 +74,17 @@ Promise.all([
       const stateName = d.properties.name;
       console.log("Clicked state:", stateName);
 
-      d3.select("#state-details").classed("hidden", false);
-      d3.select("#state-title").text(stateName);
+      // Toggle logic: if same state is clicked again, close the panel
+      if (selectedState === stateName) {
+        selectedState = null;
+        d3.select("#state-details").classed("hidden", true);
+        return;
+      }
+
+selectedState = stateName; // set new state as selected
+d3.select("#state-details").classed("hidden", false);
+d3.select("#state-title").text(stateName);
+
       //d3.select("#state-charts").html("Loading data for " + stateName + "...");
       // Filter full salary data to the selected state
       //const stateRows = fullSalaryData.filter(d => d["State_inferred"] === stateName);
