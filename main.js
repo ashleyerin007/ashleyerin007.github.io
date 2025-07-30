@@ -3,7 +3,6 @@
 import { renderScene0, renderNextScene } from './sceneController.js';
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("🚀 main.js loaded");
 
   // Initialize the first scene
   renderScene0();
