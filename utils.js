@@ -32,7 +32,7 @@ export function cleanLayoffData(rawData) {
     // Example formats: "11-Dec-24", "28-Jan", "March 3"
     let dateObj;
 
-    // Try known formats
+    // Try formats
     const knownFormats = [
       d3.timeParse("%d-%b-%y"),  // 11-Dec-24
       d3.timeParse("%d-%b"),     // 28-Jan
@@ -52,7 +52,7 @@ export function cleanLayoffData(rawData) {
       }
     }
 
-    // If nothing worked, return original
+    // If nothing worked
     return "";
   };
 
@@ -94,4 +94,8 @@ export function getLayoffCountsByStateYear(cleanedLayoffs) {
   });
 
   return layoffCounts;
+}
+
+export async function loadFullSalaryData(csvPath) {
+  return d3.csv(csvPath, d3.autoType);
 }
