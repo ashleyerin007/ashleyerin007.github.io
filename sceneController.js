@@ -8,17 +8,14 @@ export function renderScene0() {
 }
 
 export function renderScene1() {
-  console.log("📘 Scene 1: Salary Trends");
   document.querySelector("#salary-trends")?.scrollIntoView({ behavior: "smooth" });
 }
 
 export function renderScene2() {
-  console.log("📗 Scene 2: Layoffs");
   document.querySelector("#layoffs-section")?.scrollIntoView({ behavior: "smooth" });
 }
 
 export function renderScene3() {
-  console.log("📙 Scene 3: US Map");
   document.querySelector("#map-section")?.scrollIntoView({ behavior: "smooth" });
 }
 
@@ -29,6 +26,6 @@ export function renderNextScene() {
   } else if (state.currentScene === 3) {
     renderScene3();
   } else {
-    console.log("📕 End of guided scenes");
+    console.log("End of guided scenes");
   }
 }
