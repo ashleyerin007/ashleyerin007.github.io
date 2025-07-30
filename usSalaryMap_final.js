@@ -56,7 +56,16 @@ getAverageSalariesByState("Sal.csv").then(averageSalaries => {
             .style("left", (event.pageX + 10) + "px")
             .style("top", (event.pageY - 28) + "px");
         })
-        .on("mouseout", () => tooltip.transition().duration(300).style("opacity", 0));
+        .on("mouseout", () => tooltip.transition().duration(300).style("opacity", 0))
+
+        .on("click", (event, d) => {
+          const stateName = d.properties.name;
+          console.log("Clicked state:", stateName);  // Add this line
+
+          d3.select("#state-details").classed("hidden", false);
+          d3.select("#state-title").text(stateName);
+          d3.select("#state-charts").html("Loading data for " + stateName + "...");
+        });
 
       // Legend
 
