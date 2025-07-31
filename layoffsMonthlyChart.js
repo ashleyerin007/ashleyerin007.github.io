@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     d => d.month
   );
 
-  // Convert to sorted array
+  // sorted array
   const lineData = Array.from(layoffsPerMonth, ([month, total]) => ({ month, total }))
     .filter(d => d.month) // Remove nulls
     .sort((a, b) => d3.ascending(a.month, b.month));
@@ -73,7 +73,6 @@ function drawLineChart(data) {
     .style("font-weight", "bold")
     .text("Biotech Layoffs per Month");
 
-  // Tooltip dots (optional, can annotate later)
   svg.selectAll("circle")
     .data(data)
     .join("circle")
