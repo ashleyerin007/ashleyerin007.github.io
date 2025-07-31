@@ -15,11 +15,13 @@ export async function getAverageSalariesByState(csvPath) {
     }
   });
 
-  // avg salary by state
+  // avg salary by state (only include states with ≥ 3 records)
   const averageSalaries = {};
   for (const [state, salaries] of Object.entries(salaryByState)) {
-    const avg = d3.mean(salaries);
-    averageSalaries[state] = Math.round(avg);
+    if (salaries.length >= 3) {
+      const avg = d3.mean(salaries);
+      averageSalaries[state] = Math.round(avg);
+    }
   }
 
   return averageSalaries;
