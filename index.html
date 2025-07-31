@@ -8,7 +8,7 @@
   <style>
     html, body {
       margin: 0;
-      padding: 0 0 0 40px; /* add left-side padding */
+      padding: 0 0 0 40px;
       height: 100%;
     }
 
@@ -29,7 +29,7 @@
     #map {
       margin-top: 0;
       padding-top: 0;
-      height: auto;  /* Let it fit its content naturally */
+      height: auto;
     }
 
     svg {
@@ -85,18 +85,17 @@
       max-width: 42%;
     }
 
-    /* Add vertical spacing between Part I and Part II */
     #salary-trends {
       margin-bottom: 30px;
     }
 
     #layoffs-section {
-      margin-top: 40px;        /* increases space above (from Part I) */
-      margin-bottom: 10px;     /* decreases space below (before Map) */
+      margin-top: 40px;       
+      margin-bottom: 10px;    
     }
 
     #map-section {
-      margin-top: 0px;         /* ensures no extra gap above the map */
+      margin-top: 0px;
     }
 
     .section-label {
@@ -123,12 +122,12 @@
     }
 
     #state-details {
-      position: fixed;       /* changed from absolute */
+      position: fixed;
       top: 450px;
       right: 40px;
       width: 400px;
       background: white;
-      border: 2px solid red; /* temporary */
+      border: 2px solid red;
       z-index: 1000;
       padding: 15px;
       box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
@@ -140,7 +139,7 @@
     }
 
     section {
-      scroll-margin-top: 80px; /* keeps headings from being flush at top */
+      scroll-margin-top: 80px;
       padding-top: 100px;
       padding-bottom: 100px;
 }
@@ -150,20 +149,20 @@
 </head>
 <body>
 
-  <!-- Part I: Salary Trends -->
+  <!-- Part I -->
   <section id="salary-trends">
     <h2><span class="section-label">1.</span> Salary Trends Over Time</h2>
     <p class="section-intro">Biotech salaries have shown dramatic shifts in recent years. The charts below highlight roles and geographic changes over time.</p>
 
     <div class="chart-row">
-      <!-- Chart 1: Grouped Bar by Role -->
+      <!-- Chart 1 -->
       <div class="chart-container wide-chart">
         <h3>Grouped Bar Chart (Top Roles by Year)</h3>
         <div id="salary-role-bar"></div>
         <script type="module" src="./salaryRoleGroupedBar.js"></script>
       </div>
 
-      <!-- Chart 2: Salary by State -->
+      <!-- Chart 2 -->
       <div class="chart-container narrow-chart">
         <h3>By State</h3>
         <div id="salary-by-state"></div>
@@ -174,7 +173,7 @@
 
   <hr class="section-divider" />
 
-  <!-- Part II: Layoffs Chart -->
+  <!-- Part II -->
   <section id="layoffs-section">
       <h2><span class="section-label">2.</span>Layoffs Over Time</h2>
     <p class="section-intro">Edit text later</p>
@@ -183,7 +182,7 @@
 
   <hr class="section-divider" />
 
-  <!-- Part III: U.S. Map -->
+  <!-- Part III -->
   <section id="map-section">
     <h2><span class="section-label">3.</span>U.S. Salary Map</h2>
     <p class="section-intro">Edit text later</p>
@@ -195,17 +194,9 @@
     <div id="state-charts"></div>
   </div>
 
-  <!-- Scripts -->
   <script type="module" src="./usSalaryMap_final.js"></script>
   <script type="module" src="./layoffsData.js"></script>
   <script type="module" src="./layoffsMonthlyChart.js"></script>
-
-  <!-- Navigation Button -->
-  <div style="text-align: center; margin: 40px 0;">
-    <button id="next-btn" style="padding: 10px 20px; font-size: 16px;">
-      Next
-    </button>
-  </div>
 
   <script type="module" src="./main.js"></script>
 
