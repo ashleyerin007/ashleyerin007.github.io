@@ -25,10 +25,9 @@ d3.csv("Sal.csv", d3.autoType).then(data => {
     .slice(0, 10)
     .map(d => d[0]);
 
-  // Filter data
   const filtered = data.filter(d => topRoles.includes(d["Job Title"]));
 
-  // Group by Year + Role
+  // Group
   const grouped = d3.rollup(
     filtered,
     v => d3.mean(v, d => d["Annual Base Salary"]),
@@ -69,12 +68,10 @@ d3.csv("Sal.csv", d3.autoType).then(data => {
     .domain(topRoles)
     .range(d3.schemeCategory10);
 
-  // X-axis
   svg.append("g")
     .attr("transform", `translate(0,${height})`)
     .call(d3.axisBottom(x0).tickFormat(d3.format("d")));
 
-  // Y-axis
   svg.append("g")
     .call(d3.axisLeft(y));
 
