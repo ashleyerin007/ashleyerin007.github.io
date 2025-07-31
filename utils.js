@@ -15,7 +15,7 @@ export async function getAverageSalariesByState(csvPath) {
     }
   });
 
-  // Compute the average salary for each state
+  // avg salary by state
   const averageSalaries = {};
   for (const [state, salaries] of Object.entries(salaryByState)) {
     const avg = d3.mean(salaries);
@@ -29,10 +29,9 @@ export function cleanLayoffData(rawData) {
   const parseDate = (dateStr, yearStr) => {
     if (!dateStr) return "";
 
-    // Example formats: "11-Dec-24", "28-Jan", "March 3"
+    // formats: "11-Dec-24", "28-Jan", "March 3"
     let dateObj;
 
-    // Try formats
     const knownFormats = [
       d3.timeParse("%d-%b-%y"),  // 11-Dec-24
       d3.timeParse("%d-%b"),     // 28-Jan
@@ -43,7 +42,7 @@ export function cleanLayoffData(rawData) {
     for (const parse of knownFormats) {
       const temp = parse(dateStr);
       if (temp) {
-        // If year is missing, insert it from Year column
+        // if missing year
         const year = +yearStr;
         if (isNaN(temp.getFullYear()) || temp.getFullYear() < 100) {
           temp.setFullYear(year);
@@ -52,7 +51,6 @@ export function cleanLayoffData(rawData) {
       }
     }
 
-    // If nothing worked
     return "";
   };
 
@@ -63,7 +61,7 @@ export function cleanLayoffData(rawData) {
 
       return {
         ...d,
-        "Date": cleanedDate || d["Date"], // fallback to original if unparseable
+        "Date": cleanedDate || d["Date"], // fallback to original if can't parse
       };
     });
 }
