@@ -12,17 +12,15 @@ const svg = d3.select("#salary-by-state")
 d3.csv("Sal.csv", d3.autoType).then(data => {
   const visibleStates = ["Massachusetts", "California", "Pennsylvania", "Washington"];
 
-  // X scale: years
+  // years
   const years = [...new Set(data.map(d => d.Year))].sort();
   const x = d3.scalePoint()
     .domain(years)
     .range([0, width])
     .padding(0.5);
 
-  // Y scale
   const y = d3.scaleLinear().range([height, 0]);
 
-  // Line generator
   const line = d3.line()
     .x(d => x(d.year))
     .y(d => y(d.average));
@@ -42,7 +40,7 @@ d3.csv("Sal.csv", d3.autoType).then(data => {
     };
   });
 
-  // override 2025 values
+  // data cleaning issues, override 2025 values
   const manual2025Averages = {
     "Massachusetts": 150723.9867,
     "California": 146111,
@@ -63,11 +61,10 @@ d3.csv("Sal.csv", d3.autoType).then(data => {
     }
   });
 
-  // Y domain from data
+  // Y domain
   const allValues = stateData.flatMap(d => d.values.map(v => v.average));
   y.domain([0, d3.max(allValues)]).nice();
 
-  // Axes
   svg.append("g")
     .attr("transform", `translate(0,${height})`)
     .call(d3.axisBottom(x));
