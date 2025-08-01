@@ -10,8 +10,9 @@ const height = 600;
 
 const svg = d3.select("#map")
   .append("svg")
-  .attr("width", width)
-  .attr("height", height);
+  .attr("viewBox", "0 0 960 600")
+  .attr("preserveAspectRatio", "xMidYMid meet")
+  .classed("responsive-svg", true);
 
 const projection = d3.geoAlbersUsa().translate([width / 2, height / 2]).scale(1000);
 const path = d3.geoPath().projection(projection);
