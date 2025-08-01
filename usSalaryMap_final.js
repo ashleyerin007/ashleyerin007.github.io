@@ -132,7 +132,15 @@ d3.select("#state-title").text(stateName);
       // Create HTML list
       let html = `<h4>Top Job Titles in ${stateName}</h4><ul>`;
       topJobs.forEach(([title, stats]) => {
-        html += `<li>${title} — (${stats.count}), avg salary: $${Math.round(stats.avgSalary).toLocaleString()}</li>`;
+        //html += `<li>${title} — (${stats.count}), avg salary: $${Math.round(stats.avgSalary).toLocaleString()}</li>`;
+        const isInteractive = multiEntryRoles.has(title);
+        const roleId = title.replace(/\W+/g, "-").toLowerCase(); // safe ID
+
+        if (isInteractive) {
+          html += `<li><a href="#" class="role-link" data-role="${title}" data-roleid="${roleId}">${title}</a> — (${stats.count}), avg salary: $${Math.round(stats.avgSalary).toLocaleString()}</li>`;
+        } else {
+          html += `<li>${title} — (${stats.count}), avg salary: $${Math.round(stats.avgSalary).toLocaleString()}</li>`;
+        }
       });
       html += `</ul>`;
 
