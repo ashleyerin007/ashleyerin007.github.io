@@ -108,10 +108,26 @@ d3.select("#state-title").text(stateName);
         d => d["Job Title"]
       );
 
+      const rolesWithMultipleEntries = jobStats.filter(([_, stats]) => stats.count > 1);
+
+      console.log(`${stateName} — Roles with >1 entry:`);
+      rolesWithMultipleEntries.forEach(([title, stats]) => {
+        console.log(`- ${title} (${stats.count} entries, avg salary: $${Math.round(stats.avgSalary)})`);
+      });
+
       // Sort and take top 5 by count
       const topJobs = jobStats
         .sort((a, b) => d3.descending(a[1].count, b[1].count))
         .slice(0, 5);
+
+      const multiEntryRoles = new Set(
+        topJobs
+          .filter(([_, stats]) => stats.count > 1)
+          .map(([title]) => title)
+      );
+
+      console.log("Interactive roles (count > 1):", Array.from(multiEntryRoles));
+
 
       // Create HTML list
       let html = `<h4>Top Job Titles in ${stateName}</h4><ul>`;
