@@ -46,6 +46,21 @@
       display: block;
     }
 
+    #map,
+      #layoff-map {
+        display: flex;
+        justify-content: center;
+        margin: 0 auto;
+        padding: 20px 0;
+        width: 100%;
+      }
+
+      #map svg,
+      #layoff-map svg {
+        max-width: 100%;
+        height: auto;
+      }
+
     .tooltip {
       position: absolute;
       text-align: center;
@@ -158,6 +173,24 @@
       text-align: center;
     }
 
+    #layoff-details {
+      position: fixed;
+      top: 450px;
+      right: 40px;
+      width: 400px;
+      background: white;
+      border: 2px solid #999;
+      z-index: 1000;
+      padding: 15px;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+      font-size: 14px;
+    }
+
+    .map-toggle button.active {
+      font-weight: bold;
+      background-color: #ddd;
+    }
+
     section {
       scroll-margin-top: 80px;
       padding-top: 100px;
@@ -172,7 +205,7 @@
   <!-- Part I -->
   <section id="salary-trends">
     <h2><span class="section-label">1.</span> Salary Trends Over Time</h2>
-    <p class="section-intro">Biotech salaries vary widely between roles, without stable increases for some roles between 2022-2024.</p>
+    <p class="section-intro">Biotech salaries vary widely, with some roles not seeing stable increases between 2022-2025.</p>
 
     <div class="chart-row">
       <!-- Chart 1 -->
@@ -182,7 +215,7 @@
         <script type="module" src="./salaryRoleGroupedBar.js"></script>
 
           <div class="callout">
-            Directors' salaries have increased steadily, while some lab-based roles see limited growth.
+            Director salaries increase steadily, while lab-based roles see limited growth.
           </div>
 
       </div>
@@ -212,10 +245,23 @@
 
   <!-- Part III -->
   <section id="map-section">
-    <h2><span class="section-label">3.</span>U.S. Salary Map</h2>
-    <p class="section-intro">Edit text later</p>
-    <div id="map"></div>
+    <h2 id="map-section-title">
+      <span class="section-label">3.</span>
+      <span id="map-view-title">U.S. Salary Map</span>
+    </h2>
+    <p class="section-intro">Explore salaries and layoffs in the biotech industry by state.</p>
+
+    <!-- Toggle Buttons -->
+    <div class="map-toggle">
+      <button id="show-salary-map" class="active">Salary View</button>
+      <button id="show-layoff-map">Layoff View</button>
+    </div>
+
+    <!-- Maps -->
+    <div id="map" style="display: block;"></div>
+    <div id="layoff-map" style="display: none;"></div>
   </section>
+
 
   <div id="state-details" class="hidden">
     <h3 id="state-title"></h3>
@@ -223,9 +269,15 @@
     <div id="role-detail-box"></div>
   </div>
 
+  <div id="layoff-details" class="hidden">
+    <h3 id="layoff-state-title"></h3>
+    <div id="layoff-state-content"></div>
+  </div>
+
   <script type="module" src="./usSalaryMap_final.js"></script>
   <script type="module" src="./layoffsData.js"></script>
   <script type="module" src="./layoffsMonthlyChart.js"></script>
+  <script type="module" src="./usLayoffMap.js"></script>
 
   <script type="module" src="./main.js"></script>
 
