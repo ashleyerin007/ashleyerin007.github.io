@@ -145,6 +145,41 @@ d3.select("#state-title").text(stateName);
       html += `</ul>`;
 
       d3.select("#state-charts").html(html);
+
+      d3.selectAll(".role-link").on("click", (event) => {
+        event.preventDefault();
+
+        const role = event.target.dataset.role;
+
+        const roleRows = stateRows.filter(d =>
+          (d["Job Title"] === role) &&
+          d["Annual Base Salary"] &&
+          !isNaN(d["Annual Base Salary"]) &&
+          d["Year"]
+        );
+
+        const groupedByYear = d3.groups(roleRows, d => d["Year"]);
+
+        const summary = groupedByYear
+          .sort(([a], [b]) => d3.ascending(+a, +b))
+          .map(([year, rows]) => {
+            const salaries = rows.map(r => +r["Annual Base Salary"]);
+            return {
+              year,
+              min: d3.min(salaries),
+              max: d3.max(salaries)
+            };
+          });
+
+        // Create table
+        let tableHtml = `<h4>${role} — Min/Max Salary by Year</h4><table><thead><tr><th>Year</th><th>Min</th><th>Max</th></tr></thead><tbody>`;
+        summary.forEach(({ year, min, max }) => {
+          tableHtml += `<tr><td>${year}</td><td>$${Math.round(min).toLocaleString()}</td><td>$${Math.round(max).toLocaleString()}</td></tr>`;
+        });
+        tableHtml += `</tbody></table>`;
+
+        d3.select("#role-detail-box").html(tableHtml);
+      });
     });
 
   // Draw legend
