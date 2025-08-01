@@ -131,7 +131,7 @@
     #state-details {
       position: fixed;
       top: 450px;
-      right: 40px;
+      right: 460px; /* Push this one to the left */
       width: 400px;
       background: white;
       border: 2px solid red;
@@ -140,7 +140,6 @@
       box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
       font-size: 14px;
     }
-
     .hidden {
       display: none;
     }
@@ -176,7 +175,7 @@
     #layoff-details {
       position: fixed;
       top: 450px;
-      right: 40px;
+      right: 40px; 
       width: 400px;
       background: white;
       border: 2px solid #999;
@@ -185,6 +184,7 @@
       box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
       font-size: 14px;
     }
+
 
     .map-toggle button.active {
       font-weight: bold;
@@ -269,17 +269,15 @@
   <section id="map-section">
     <h2 id="map-section-title">
       <span class="section-label">3.</span>
-      <span id="map-view-title">U.S. Salary Map</span>
+      <span id="map-view-title">U.S. Trends</span>
     </h2>
     <p class="section-intro">Explore salaries and layoffs in the biotech industry by state.</p>
-
-    <!-- Toggle Buttons -->
+    
     <div class="map-toggle">
       <button id="show-salary-map" class="active">Salary View</button>
       <button id="show-layoff-map">Layoff View</button>
     </div>
 
-    <!-- Maps -->
     <div id="map" style="display: block;"></div>
     <div id="layoff-map" style="display: none;"></div>
   </section>
