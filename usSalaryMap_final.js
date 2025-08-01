@@ -20,6 +20,7 @@ const tooltip = d3.select("body").append("div").attr("class", "tooltip").style("
 
 let fullSalaryData = [];
 let selectedState = null;
+let expandedRole = null;
 
 Promise.all([
   getAverageSalariesByState("Sal.csv"),
@@ -37,7 +38,6 @@ Promise.all([
     .domain(d3.extent(Object.values(averageSalaries)))
     .interpolator(d3.interpolateBlues);
 
-  // Draw map
   svg.selectAll("path")
     .data(states)
     .join("path")
@@ -74,20 +74,16 @@ Promise.all([
       const stateName = d.properties.name;
       console.log("Clicked state:", stateName);
 
-      // Toggle logic: if same state is clicked again, close the panel
       if (selectedState === stateName) {
         selectedState = null;
         d3.select("#state-details").classed("hidden", true);
         return;
       }
 
-selectedState = stateName; // set new state as selected
-d3.select("#state-details").classed("hidden", false);
-d3.select("#state-title").text(stateName);
+      selectedState = stateName;
+      d3.select("#state-details").classed("hidden", false);
+      d3.select("#state-title").text(stateName);
 
-      //d3.select("#state-charts").html("Loading data for " + stateName + "...");
-      // Filter full salary data to the selected state
-      //const stateRows = fullSalaryData.filter(d => d["State_inferred"] === stateName);
       const stateRows = fullSalaryData.filter(d => {
         const state = d["State_inferred"] || d["US State"];
         return state && state.trim().toLowerCase() === stateName.toLowerCase();
@@ -97,7 +93,6 @@ d3.select("#state-title").text(stateName);
         d3.select("#state-charts").html(`<p>No job data available for <strong>${stateName}</strong>.</p>`);
         return;
       }
-
 
       const jobStats = d3.rollups(
         stateRows.filter(d => d["Annual Base Salary"] && !isNaN(d["Annual Base Salary"])),
@@ -110,12 +105,6 @@ d3.select("#state-title").text(stateName);
 
       const rolesWithMultipleEntries = jobStats.filter(([_, stats]) => stats.count > 1);
 
-      console.log(`${stateName} — Roles with >1 entry:`);
-      rolesWithMultipleEntries.forEach(([title, stats]) => {
-        console.log(`- ${title} (${stats.count} entries, avg salary: $${Math.round(stats.avgSalary)})`);
-      });
-
-      // Sort and take top 5 by count
       const topJobs = jobStats
         .sort((a, b) => d3.descending(a[1].count, b[1].count))
         .slice(0, 5);
@@ -126,15 +115,10 @@ d3.select("#state-title").text(stateName);
           .map(([title]) => title)
       );
 
-      console.log("Interactive roles (count > 1):", Array.from(multiEntryRoles));
-
-
-      // Create HTML list
       let html = `<h4>Top Job Titles in ${stateName}</h4><ul>`;
       topJobs.forEach(([title, stats]) => {
-        //html += `<li>${title} — (${stats.count}), avg salary: $${Math.round(stats.avgSalary).toLocaleString()}</li>`;
         const isInteractive = multiEntryRoles.has(title);
-        const roleId = title.replace(/\W+/g, "-").toLowerCase(); // safe ID
+        const roleId = title.replace(/\W+/g, "-").toLowerCase();
 
         if (isInteractive) {
           html += `<li><a href="#" class="role-link" data-role="${title}" data-roleid="${roleId}">${title}</a> — (${stats.count}), avg salary: $${Math.round(stats.avgSalary).toLocaleString()}</li>`;
@@ -151,8 +135,16 @@ d3.select("#state-title").text(stateName);
 
         const role = event.target.dataset.role;
 
+        if (expandedRole === role) {
+          d3.select("#role-detail-box").html("");
+          expandedRole = null;
+          return;
+        }
+
+        expandedRole = role;
+
         const roleRows = stateRows.filter(d =>
-          (d["Job Title"] === role) &&
+          d["Job Title"] === role &&
           d["Annual Base Salary"] &&
           !isNaN(d["Annual Base Salary"]) &&
           d["Year"]
@@ -171,7 +163,6 @@ d3.select("#state-title").text(stateName);
             };
           });
 
-        // Create table
         let tableHtml = `<h4>${role} — Min/Max Salary by Year</h4><table><thead><tr><th>Year</th><th>Min</th><th>Max</th></tr></thead><tbody>`;
         summary.forEach(({ year, min, max }) => {
           tableHtml += `<tr><td>${year}</td><td>$${Math.round(min).toLocaleString()}</td><td>$${Math.round(max).toLocaleString()}</td></tr>`;
