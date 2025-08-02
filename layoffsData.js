@@ -8,7 +8,7 @@ export async function loadLayoffData(csvPath = "fierce_layoffs.csv") {
   const currentYear = new Date().getFullYear();
 
   const data = await d3.csv(csvPath, row => {
-    // Attempt to parse the date
+    // Attempt date
     let date = parseFullDate(row["Date"]);
     if (!date) {
       date = parseMonthDay(row["Date"]);
@@ -32,14 +32,14 @@ export async function loadLayoffData(csvPath = "fierce_layoffs.csv") {
   return data;
 }
 
-// Helper: parse percent like "25%" -> 25
+// percent like "25%" -> 25
 function parsePercent(val) {
   if (!val) return null;
   const match = val.match(/^(\d+(?:\.\d+)?)%$/);
   return match ? +match[1] : null;
 }
 
-// Helper: safely parse numbers
+// parse numbers
 function parseNumber(val) {
   const num = +val;
   return isNaN(num) ? null : num;

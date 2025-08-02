@@ -31,9 +31,6 @@ export function cleanLayoffData(rawData) {
   const parseDate = (dateStr, yearStr) => {
     if (!dateStr) return "";
 
-    // formats: "11-Dec-24", "28-Jan", "March 3"
-    let dateObj;
-
     const knownFormats = [
       d3.timeParse("%d-%b-%y"),  // 11-Dec-24
       d3.timeParse("%d-%b"),     // 28-Jan
@@ -44,7 +41,6 @@ export function cleanLayoffData(rawData) {
     for (const parse of knownFormats) {
       const temp = parse(dateStr);
       if (temp) {
-        // if missing year
         const year = +yearStr;
         if (isNaN(temp.getFullYear()) || temp.getFullYear() < 100) {
           temp.setFullYear(year);
@@ -61,9 +57,15 @@ export function cleanLayoffData(rawData) {
     .map(d => {
       const cleanedDate = parseDate(d["Date"], d["Year"]);
 
+      // Parse percent reduction
+      const pctStr = d["% reduction"] || d["% Reduction"] || d["% Headcount Reduction"] || "";
+      const match = pctStr.match(/(\d+)%/);
+      const percentReduction = match ? +match[1] : null;
+
       return {
         ...d,
         "Date": cleanedDate || d["Date"], // fallback to original if can't parse
+        "Percent Reduction": percentReduction,
       };
     });
 }
@@ -77,8 +79,17 @@ export function getLayoffCountsByStateYear(cleanedLayoffs) {
 
     //if (!state || isNaN(year)) return;
 
-    const yearRaw = row["Year"];
-    const year = /^\d{4}$/.test(yearRaw) ? yearRaw : "Unknown";
+    //const yearRaw = row["Year"];
+    //const year = /^\d{4}$/.test(yearRaw) ? yearRaw : "Unknown";
+
+    const yearRaw = row["Year"]?.toString().trim();
+    const year = yearRaw && yearRaw.length === 4 && /^\d{4}$/.test(yearRaw)
+      ? yearRaw
+      : (yearRaw === "22" ? "2022"
+        : yearRaw === "23" ? "2023"
+        : yearRaw === "24" ? "2024"
+        : yearRaw === "25" ? "2025"
+        : "Unknown");
 
     if (!state) return;
 

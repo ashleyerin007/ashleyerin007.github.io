@@ -52,19 +52,9 @@ Promise.all([
     .on("mouseover", (event, d) => {
       const name = d.properties.name;
       const salary = averageSalaries[name];
-      const layoffs = layoffSummary[name];
-
-      let layoffInfo = "Layoffs: No data";
-      if (layoffs) {
-        const yearSummaries = Object.entries(layoffs)
-          .sort(([a], [b]) => a - b)
-          .map(([year, count]) => `${year} (${count})`)
-          .join(", ");
-        layoffInfo = `Layoffs: ${yearSummaries}`;
-      }
 
       tooltip.transition().duration(200).style("opacity", 0.9);
-      tooltip.html(`${name}<br>Avg Salary: $${salary ? salary.toLocaleString() : "No data"}<br>${layoffInfo}`)
+      tooltip.html(`${name}<br>Avg Salary: $${salary ? salary.toLocaleString() : "No data"}`)
         .style("left", (event.pageX + 10) + "px")
         .style("top", (event.pageY - 28) + "px");
     })

@@ -129,9 +129,9 @@
     }
 
     #state-details {
-      position: fixed;
-      top: 450px;
-      right: 460px; /* Push this one to the left */
+      position: absolute;
+      top: 150px;
+      right: 460px;
       width: 400px;
       background: white;
       border: 2px solid red;
@@ -140,6 +140,7 @@
       box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
       font-size: 14px;
     }
+
     .hidden {
       display: none;
     }
@@ -173,9 +174,9 @@
     }
 
     #layoff-details {
-      position: fixed;
-      top: 450px;
-      right: 40px; 
+      position: absolute;
+      top: 200px;
+      right: 40px; /* Keep this one where it is */
       width: 400px;
       background: white;
       border: 2px solid #999;
@@ -185,6 +186,9 @@
       font-size: 14px;
     }
 
+    #scene-3-wrapper {
+      position: relative;
+    }
 
     .map-toggle button.active {
       font-weight: bold;
@@ -236,10 +240,9 @@
         <div id="salary-role-bar"></div>
         <script type="module" src="./salaryRoleGroupedBar.js"></script>
 
-          <div class="callout">
-            Director salaries increase steadily, while lab-based roles see limited growth.
-          </div>
-
+        <div class="callout">
+          Director salaries increase steadily, while lab-based roles see limited growth.
+        </div>
       </div>
 
       <!-- Chart 2 -->
@@ -256,10 +259,9 @@
 
   <!-- Part II -->
   <section id="layoffs-section">
-      <h2><span class="section-label">2.</span>Layoffs Over Time</h2>
+    <h2><span class="section-label">2.</span>Layoffs Over Time</h2>
     <p class="section-intro">Edit text later</p>
     <div id="vis-container"></div>
-
     <div style="height: 25vh;"></div>
   </section>
 
@@ -267,38 +269,43 @@
 
   <!-- Part III -->
   <section id="map-section">
-    <h2 id="map-section-title">
-      <span class="section-label">3.</span>
-      <span id="map-view-title">U.S. Trends</span>
-    </h2>
-    <p class="section-intro">Explore salaries and layoffs in the biotech industry by state.</p>
-    
-    <div class="map-toggle">
-      <button id="show-salary-map" class="active">Salary View</button>
-      <button id="show-layoff-map">Layoff View</button>
+    <div id="scene-3-wrapper">
+      <h2 id="map-section-title">
+        <span class="section-label">3.</span>
+        <span id="map-view-title">U.S. Trends</span>
+      </h2>
+      <p class="section-intro">Explore salaries and layoffs in the biotech industry by state.</p>
+
+      <!-- Toggle Buttons -->
+      <div class="map-toggle">
+        <button id="show-salary-map" class="active">Salary View</button>
+        <button id="show-layoff-map">Layoff View</button>
+      </div>
+
+      <!-- Maps -->
+      <div id="map" style="display: block;"></div>
+      <div id="layoff-map" style="display: none;"></div>
+
+      <!-- State-specific popups scoped inside scene 3 -->
+      <div id="state-details" class="hidden">
+        <h3 id="state-title"></h3>
+        <div id="state-charts"></div>
+        <div id="role-detail-box"></div>
+      </div>
+
+      <div id="layoff-details" class="hidden">
+        <h3 id="layoff-state-title"></h3>
+        <div id="layoff-state-content"></div>
+        <div id="layoff-year-links"></div>
+        <div id="layoff-bar-chart"></div>
+      </div>
     </div>
-
-    <div id="map" style="display: block;"></div>
-    <div id="layoff-map" style="display: none;"></div>
   </section>
-
-
-  <div id="state-details" class="hidden">
-    <h3 id="state-title"></h3>
-    <div id="state-charts"></div>
-    <div id="role-detail-box"></div>
-  </div>
-
-  <div id="layoff-details" class="hidden">
-    <h3 id="layoff-state-title"></h3>
-    <div id="layoff-state-content"></div>
-  </div>
 
   <script type="module" src="./usSalaryMap_final.js"></script>
   <script type="module" src="./layoffsData.js"></script>
   <script type="module" src="./layoffsMonthlyChart.js"></script>
   <script type="module" src="./usLayoffMap.js"></script>
-
   <script type="module" src="./main.js"></script>
 
 </body>

@@ -23,6 +23,22 @@ Promise.all([
 ]).then(([rawLayoffData, us]) => {
   const cleanedLayoffs = cleanLayoffData(rawLayoffData);
   const layoffCounts = getLayoffCountsByStateYear(cleanedLayoffs);
+  console.log("FULL LAYOFF COUNTS BY STATE + YEAR", layoffCounts);
+
+  const layoffsByStateYear = {};
+  for (const row of cleanedLayoffs) {
+    const state = row["Location (US)"]?.trim();
+    const year = row["Year"];
+    const pct = row["Percent Reduction"];
+    const company = row["Company"];
+
+    if (!state || !year || pct == null) continue;
+
+    if (!layoffsByStateYear[state]) layoffsByStateYear[state] = {};
+    if (!layoffsByStateYear[state][year]) layoffsByStateYear[state][year] = [];
+
+    layoffsByStateYear[state][year].push({ company, pct });
+  }
 
   const states = topojson.feature(us, us.objects.states).features;
 
@@ -62,9 +78,9 @@ Promise.all([
       selectedLayoffState = name;
 
       const counts = layoffCounts[name] || {};
-      const total = (counts["2024"] || 0) + (counts["2025"] || 0);
-      const yearBreakdown = ["2024", "2025"]
-        .filter(y => counts[y])
+      const sortedYears = Object.keys(counts).sort();
+      const total = sortedYears.reduce((sum, y) => sum + counts[y], 0);
+      const yearBreakdown = sortedYears
         .map(y => `${y}: ${counts[y]}`)
         .join("<br>");
 
@@ -74,6 +90,32 @@ Promise.all([
         <p><strong>Total Layoffs:</strong> ${total}</p>
         <p>${yearBreakdown || "No data available"}</p>
       `);
+
+      const yearsAvailable = Object.keys(layoffsByStateYear[name] || {}).sort();
+
+      if (yearsAvailable.length > 0) {
+        // Add year links
+        d3.select("#layoff-year-links").html(
+          `<p><strong>View % Reduction:</strong> ${
+            yearsAvailable.map(y => `<a href="#" class="year-link" data-year="${y}">${y}</a>`).join(" | ")
+          }</p>`
+        );
+
+        // Draw the first year's chart by default
+        drawLayoffChart(name, yearsAvailable[0]);
+
+        // Handle clicks on year links
+        d3.selectAll(".year-link").on("click", (event) => {
+          event.preventDefault();
+          const selectedYear = event.target.dataset.year;
+          drawLayoffChart(name, selectedYear);
+        });
+      } else {
+        // If no data, clear any chart or links
+        d3.select("#layoff-year-links").html("");
+        d3.select("#layoff-bar-chart").html("<p>No % reduction data available.</p>");
+      }
+
     });
 
   // Legend
@@ -113,4 +155,55 @@ Promise.all([
   legendSvg.append("g")
     .attr("transform", `translate(0, ${legendHeight})`)
     .call(legendAxis);
+
+    function drawLayoffChart(state, year) {
+      const data = layoffsByStateYear[state]?.[year] || [];
+
+      d3.select("#layoff-bar-chart").html(""); // Clear previous chart
+
+      const margin = { top: 10, right: 20, bottom: 40, left: 60 };
+      const width = 350 - margin.left - margin.right;
+      const height = 200 - margin.top - margin.bottom;
+
+      const svg = d3.select("#layoff-bar-chart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      const x = d3.scaleBand()
+        .domain(data.map(d => d.company))
+        .range([0, width])
+        .padding(0.1);
+
+      const y = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.pct) || 100])
+        .nice()
+        .range([height, 0]);
+
+      svg.append("g")
+        .selectAll("rect")
+        .data(data)
+        .join("rect")
+        .attr("x", d => x(d.company))
+        .attr("y", d => y(d.pct))
+        .attr("height", d => height - y(d.pct))
+        .attr("width", x.bandwidth())
+        .attr("fill", "#d62728");
+
+      svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x)
+          .tickFormat(d => d.length > 12 ? d.slice(0, 10) + "…" : d))
+        .selectAll("text")
+        .style("font-size", "10px")
+        .attr("transform", "rotate(-25)")
+        .style("text-anchor", "end");
+
+      svg.append("g")
+        .call(d3.axisLeft(y).tickFormat(d => d + "%"));
+    }
+
 });
+
