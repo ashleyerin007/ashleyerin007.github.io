@@ -8,6 +8,21 @@ const height = 600;
 
 let selectedLayoffState = null;
 
+const tooltip = d3.select("body")
+  .append("div")
+  .attr("class", "tooltip")
+  .style("position", "absolute")
+  .style("background", "white")
+  .style("border", "1px solid #999")
+  .style("padding", "6px")
+  .style("font-size", "12px")
+  .style("color", "#000")
+  .style("pointer-events", "none")
+  .style("z-index", "9999")
+  .style("opacity", 0)
+  .style("display", "block");
+
+
 const svg = d3.select("#layoff-map")
   .append("svg")
   .attr("viewBox", "0 0 960 600")
@@ -182,6 +197,7 @@ Promise.all([
         .nice()
         .range([height, 0]);
 
+
       svg.append("g")
         .selectAll("rect")
         .data(data)
@@ -190,16 +206,17 @@ Promise.all([
         .attr("y", d => y(d.pct))
         .attr("height", d => height - y(d.pct))
         .attr("width", x.bandwidth())
-        .attr("fill", "#d62728");
+        .attr("fill", "#d62728")
+        .on("mouseover", (event, d) => {
+          tooltip.transition().duration(200).style("opacity", 0.9);
+          tooltip.html(`<strong>${d.company}</strong><br>${d.pct}% reduction`)
+            .style("left", (event.pageX + 10) + "px")
+            .style("top", (event.pageY - 28) + "px");
+        })
+        .on("mouseout", () => {
+          tooltip.transition().duration(300).style("opacity", 0);
+        });
 
-      svg.append("g")
-        .attr("transform", `translate(0,${height})`)
-        .call(d3.axisBottom(x)
-          .tickFormat(d => d.length > 12 ? d.slice(0, 10) + "…" : d))
-        .selectAll("text")
-        .style("font-size", "10px")
-        .attr("transform", "rotate(-25)")
-        .style("text-anchor", "end");
 
       svg.append("g")
         .call(d3.axisLeft(y).tickFormat(d => d + "%"));
