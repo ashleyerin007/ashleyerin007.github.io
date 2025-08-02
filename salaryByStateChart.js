@@ -1,4 +1,4 @@
-const margin = { top: 40, right: 60, bottom: 40, left: 60 };
+const margin = { top: 40, right: 60, bottom: 60, left: 60 };
 const width = 600 - margin.left - margin.right;
 const height = 350 - margin.top - margin.bottom;
 
@@ -65,6 +65,7 @@ d3.csv("Sal.csv", d3.autoType).then(data => {
   const allValues = stateData.flatMap(d => d.values.map(v => v.average));
   y.domain([0, d3.max(allValues)]).nice();
 
+  // Axes
   svg.append("g")
     .attr("transform", `translate(0,${height})`)
     .call(d3.axisBottom(x));
@@ -84,6 +85,28 @@ d3.csv("Sal.csv", d3.autoType).then(data => {
     .attr("stroke-width", 2)
     .attr("d", d => line(d.values));
 
+  // Add downward arrows at decline points
+  const statesToAnnotate = ["Massachusetts", "California", "Washington"];
+  statesToAnnotate.forEach(stateName => {
+    const state = stateData.find(d => d.state === stateName);
+    if (!state) return;
+
+    state.values.forEach((curr, i) => {
+      if (i === 0) return;
+      const prev = state.values[i - 1];
+      if (curr.average < prev.average) {
+        svg.append("text")
+          .attr("x", x(curr.year))
+          .attr("y", y(curr.average) - 10)
+          .text("↓")
+          .style("fill", "crimson")
+          .style("font-size", "20px")
+          .style("font-weight", "bold")
+          .style("text-anchor", "middle");
+      }
+    });
+  });
+
   // Legend
   const legendGroup = svg.append("g").attr("class", "legend");
 
@@ -96,4 +119,13 @@ d3.csv("Sal.csv", d3.autoType).then(data => {
     .attr("fill", d => color(d))
     .style("font-size", "11px")
     .style("font-weight", "bold");
+
+  svg.append("text")
+    .attr("x", width / 2)
+    .attr("y", height + 40)
+    .text("↓ indicates a year-over-year drop in salary for that state")
+    .style("text-anchor", "middle")
+    .style("font-size", "12px")
+    .style("font-weight", "bold")
+    .style("fill", "crimson");
 });

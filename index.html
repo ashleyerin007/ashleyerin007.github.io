@@ -25,7 +25,6 @@
       display: block;
     }
 
-
     #map {
       margin-top: 0;
       padding-top: 0;
@@ -47,19 +46,19 @@
     }
 
     #map,
-      #layoff-map {
-        display: flex;
-        justify-content: center;
-        margin: 0 auto;
-        padding: 20px 0;
-        width: 100%;
-      }
+    #layoff-map {
+      display: flex;
+      justify-content: center;
+      margin: 0 auto;
+      padding: 20px 0;
+      width: 100%;
+    }
 
-      #map svg,
-      #layoff-map svg {
-        max-width: 100%;
-        height: auto;
-      }
+    #map svg,
+    #layoff-map svg {
+      max-width: 100%;
+      height: auto;
+    }
 
     .tooltip {
       position: absolute;
@@ -103,7 +102,6 @@
     #salary-trends {
       margin-bottom: 30px;
     }
-
 
     .section-label {
       font-weight: bold;
@@ -197,20 +195,20 @@
     }
 
     #map,
-      #layoff-map {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px 0;
-        width: 100%;
-      }
+    #layoff-map {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px 0;
+      width: 100%;
+    }
 
-      #map svg,
-      #layoff-map svg {
-        width: 100%;
-        height: auto;
-        display: block;
-      }
+    #map svg,
+    #layoff-map svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
 
     section {
       scroll-margin-top: 80px;
@@ -223,14 +221,12 @@
       margin-right: auto;
       display: block;
     }
-
-
   </style>
 </head>
 <body>
 
   <!-- Part I -->
-  <section id="salary-trends">
+  <section id="salary-trends" class="scene">
     <h2><span class="section-label">1.</span> Salary Trends Over Time</h2>
     <p class="section-intro">Biotech salaries vary widely, with some roles not seeing stable increases between 2022-2025.</p>
 
@@ -253,23 +249,29 @@
         <script type="module" src="./salaryByStateChart.js"></script>
       </div>
     </div>
-    <div style="height: 25vh;"></div>
+    <div style="height: 10vh;"></div>
   </section>
 
   <hr class="section-divider" />
 
   <!-- Part II -->
-  <section id="layoffs-section">
+  <section id="layoffs-section" class="scene">
     <h2><span class="section-label">2.</span>Layoffs Over Time</h2>
     <p class="section-intro">Edit text later</p>
-    <div id="vis-container"></div>
-    <div style="height: 25vh;"></div>
+
+    <div class="chart-row">
+      <div class="chart-container">
+        <div id="vis-container"></div>
+      </div>
+    </div>
+
+    <div style="height: 10vh;"></div>
   </section>
 
   <hr class="section-divider" />
 
   <!-- Part III -->
-  <section id="map-section">
+  <section id="map-section" class="scene">
     <div id="scene-3-wrapper">
       <h2 id="map-section-title">
         <span class="section-label">3.</span>
@@ -310,5 +312,4 @@
   <script type="module" src="./main.js"></script>
 
 </body>
-
 </html>

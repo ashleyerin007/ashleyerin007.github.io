@@ -4,8 +4,6 @@ const height = 400 - margin.top - margin.bottom;
 
 const svg = d3.select("#salary-role-bar")
   .append("svg")
-  //.attr("width", width + margin.left + margin.right)
-  //.attr("height", height + margin.top + margin.bottom)
   .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
   .attr("preserveAspectRatio", "xMidYMid meet")
   .append("g")
@@ -27,7 +25,6 @@ d3.csv("Sal.csv", d3.autoType).then(data => {
 
   const filtered = data.filter(d => topRoles.includes(d["Job Title"]));
 
-  // Group
   const grouped = d3.rollup(
     filtered,
     v => d3.mean(v, d => d["Annual Base Salary"]),
@@ -75,7 +72,6 @@ d3.csv("Sal.csv", d3.autoType).then(data => {
   svg.append("g")
     .call(d3.axisLeft(y));
 
-  // Bars
   svg.selectAll("g.year-group")
     .data(flatData)
     .join("g")
@@ -87,17 +83,81 @@ d3.csv("Sal.csv", d3.autoType).then(data => {
     .attr("height", d => height - y(d.average))
     .attr("fill", d => color(d.role));
 
-  // Legend
   const legend = svg.append("g")
     .attr("transform", `translate(40,${-margin.top / 2})`);
 
   legend.selectAll("text")
     .data(topRoles)
     .join("text")
-    .attr("x", (d, i) => (i % 4) * 150) // 4 items per row
-    .attr("y", (d, i) => Math.floor(i / 4) * 16) // 16px per row
+    .attr("x", (d, i) => (i % 4) * 150)
+    .attr("y", (d, i) => Math.floor(i / 4) * 16)
     .text(d => d)
     .style("fill", d => color(d))
     .style("font-size", "11px")
     .style("font-weight", "bold");
+
+  // === Annotation for Director 2025 bar ===
+
+  const annotationGroup = svg.append("g")
+    .attr("class", "annotation-group");
+
+  svg.append("defs").append("marker")
+    .attr("id", "arrowhead")
+    .attr("viewBox", "0 0 10 10")
+    .attr("refX", 8)
+    .attr("refY", 5)
+    .attr("markerWidth", 6)
+    .attr("markerHeight", 6)
+    .attr("orient", "auto-start-reverse")
+    .append("path")
+    .attr("d", "M 0 0 L 10 5 L 0 10 z")
+    .attr("fill", "#2c7fb8");
+
+  const director2025 = flatData.find(d => d.year === 2025 && d.role === "Director");
+
+  if (director2025) {
+    const barX = x0(2025) + x1("Director") + x1.bandwidth() / 2;
+    const barY = y(director2025.average);
+
+    annotationGroup.append("line")
+      .attr("x1", barX)
+      .attr("y1", barY - 20)
+      .attr("x2", barX)
+      .attr("y2", barY)
+      .attr("stroke", "#2c7fb8")
+      .attr("stroke-width", 2)
+      .attr("marker-end", "url(#arrowhead)");
+
+    annotationGroup.append("text")
+      .attr("x", barX + 5)
+      .attr("y", barY - 10)
+      .text("Steady growth")
+      .style("font-size", "12px")
+      .style("fill", "#2c7fb8");
+  }
+
+  const baselineRoles = ["Director", "Scientist", "Research Associate"];
+
+  baselineRoles.forEach(role => {
+    const datum = flatData.find(d => d.year === 2022 && d.role === role);
+    if (datum) {
+      const baselineY = y(datum.average);
+
+      annotationGroup.append("line")
+        .attr("x1", 0)
+        .attr("x2", width)
+        .attr("y1", baselineY)
+        .attr("y2", baselineY)
+        .attr("stroke", "#999")
+        .attr("stroke-dasharray", "4,4");
+
+      annotationGroup.append("text")
+        .attr("x", width - 10)
+        .attr("y", baselineY - 6)
+        .style("font-size", "12px")
+        .style("font-weight", "bold")
+        .style("fill", "#3C41DD") 
+        .style("text-anchor", "end");
+      }
+    });
 });
