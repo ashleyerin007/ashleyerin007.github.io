@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function drawLineChart(data) {
+  //console.log(data.sort((a, b) => b.total - a.total)[0]);
   const margin = { top: 30, right: 20, bottom: 25, left: 60 };
   const width = 800 - margin.left - margin.right;
   const height = 250 - margin.top - margin.bottom;
@@ -80,4 +81,35 @@ function drawLineChart(data) {
     .attr("cy", d => y(d.total))
     .attr("r", 3)
     .attr("fill", "#2c7fb8");
+
+  const targetPoint = data.find(d => d.month === "2025-05");
+
+  if (targetPoint) {
+    const annotations = [
+      {
+        note: {
+          title: "Layoff Spike",
+          label: "Highest number of layoffs in a single month",
+          wrap: 80,
+          align: "left",
+          orientation: "leftRight",
+        },
+        data: targetPoint,
+        dx: -70,
+        dy: 10
+      }
+    ];
+
+    const makeAnnotations = d3.annotation()
+      .type(d3.annotationLabel)
+      .accessors({
+        x: d => x(parseMonth(d.month)),
+        y: d => y(d.total)
+      })
+      .annotations(annotations);
+
+    svg.append("g")
+      .attr("class", "annotation-group")
+      .call(makeAnnotations);
+  }
 }
