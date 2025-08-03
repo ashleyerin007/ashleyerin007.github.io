@@ -99,8 +99,8 @@
       max-width: 42%;
     }
 
-    #salary-trends {
-      margin-bottom: 30px;
+    .chart-container.narrow-chart {
+      padding-top: 50px;
     }
 
     .section-label {
@@ -150,9 +150,11 @@
       border-left: 4px solid #2c7fb8;
       font-size: 14px;
       line-height: 1.5;
-      max-width: 700px;
+      width: 100%;               /* Add this */
+      max-width: none;           /* Remove the 700px cap */
       color: #333;
       box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      box-sizing: border-box;    /* Ensures padding stays inside width */
     }
 
     #role-detail-box {
@@ -221,30 +223,74 @@
       margin-right: auto;
       display: block;
     }
+
+    #intro-scene {
+      background-color: #f9fcff;
+      padding-top: 200px;
+      padding-bottom: 220px;
+      text-align: center;
+    }
+
+    .intro-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .intro-title {
+      font-size: 2.8rem;
+      font-weight: bold;
+      color: #2c7fb8;
+      margin-bottom: 30px;
+    }
+
+    #intro-scene .section-intro {
+      font-size: 22px;
+      line-height: 1.7;
+    }
+
   </style>
 </head>
 <body>
 
+  <section id="intro-scene" class="scene">
+    <div class="intro-wrapper">
+      <h1 class="intro-title">Biotech in 2025: A Map of Money and Roles</h1>
+      <p class="section-intro">
+        <br>
+        The biotech industry continues to shift as new technologies emerge, funding tightens, and job roles evolve.
+        <br><br><br>
+        This data story explores how salaries and layoffs have changed between 2022 and 2025,
+        highlighting the increasing levels of instability and competition for professionals working in this field.
+        <br>
+      </p>
+    </div>
+  </section>
+
   <!-- Part I -->
   <section id="salary-trends" class="scene">
-    <h2><span class="section-label">1.</span> Salary Trends Over Time</h2>
-    <p class="section-intro">Biotech salaries vary widely, with some roles not seeing stable increases between 2022-2025.</p>
+    <h2><span class="section-label">1.</span> Salary Trends in the Biotech Industry </h2>
+    <br>
+    <p class="section-intro">Biotech salaries vary widely, with some roles not seeing stable increases between 2022-2025. 
+      <br> Data obtained from the r/biotech Salary Survey. 
+    </p>
 
     <div class="chart-row">
       <!-- Chart 1 -->
       <div class="chart-container wide-chart">
-        <h3>Grouped Bar Chart (Top Roles by Year)</h3>
+        <h3>Average salaries for the 10 most common biotech roles</h3>
         <div id="salary-role-bar"></div>
         <script type="module" src="./salaryRoleGroupedBar.js"></script>
 
         <div class="callout">
-          Director salaries increase steadily, while lab-based roles see limited growth.
+          Data shown includes all salaries from any location, averaged for all respodents reporting a given role.
+          <br>Director salaries increase steadily, while lab-based roles such as Research Associate and Scientist see limited growth or even a decline in compensation over time.
         </div>
       </div>
 
       <!-- Chart 2 -->
       <div class="chart-container narrow-chart">
-        <h3>By State</h3>
+        <h3>Average Salary By State, 2022-2025</h3>
         <div id="salary-by-state"></div>
         <script type="module" src="./salaryByStateChart.js"></script>
       </div>
@@ -256,8 +302,11 @@
 
   <!-- Part II -->
   <section id="layoffs-section" class="scene">
-    <h2><span class="section-label">2.</span>Layoffs Over Time</h2>
-    <p class="section-intro">Edit text later</p>
+    <h2><span class="section-label">2.</span>Layoffs from 2022-2025</h2>
+    <p class="section-intro">The number of publicly reported layoffs has increased every year since 2022.
+    <br>
+    <br>Many companies keep layoffs within a certain margin to avoid publicly reporting the reduction in force, 
+    <br>making these numbers low estimates of the acutal number of layoffs.</p>
 
     <div class="chart-row">
       <div class="chart-container">
@@ -277,7 +326,21 @@
         <span class="section-label">3.</span>
         <span id="map-view-title">U.S. Trends</span>
       </h2>
-      <p class="section-intro">Explore salaries and layoffs in the biotech industry by state.</p>
+      <p class="section-intro">Explore salaries and layoffs in the biotech industry by U.S. state.
+      <br>
+      <br> Click a state to bring up more information, click the state again to close.
+      <br>
+      <br>Data from the fierce biotech layoff tracker:
+      <br>
+      <a href=https://www.fiercebiotech.com/biotech/fierce-biotech-layoff-tracker-2022>2022</a>
+      <br>
+      <a href=https://www.fiercebiotech.com/biotech/fierce-biotech-layoff-tracker-2023>2023</a>
+      <br>
+      <a href=https://www.fiercebiotech.com/biotech/fierce-biotech-layoff-tracker-2024>2024</a>
+      <br>
+      <a href=https://www.fiercebiotech.com/biotech/fierce-biotech-layoff-tracker-2025>2025</a>
+      <br>
+      </p>
 
       <!-- Toggle Buttons -->
       <div class="map-toggle">
